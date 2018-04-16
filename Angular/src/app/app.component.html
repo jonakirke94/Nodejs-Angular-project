@@ -1,0 +1,92 @@
+<nav class="navbar is-dark">
+  <div class="navbar-brand">
+    <a class="navbar-item" routerLink="/">
+      <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+    </a>
+    <div class="navbar-burger burger" data-target="navbarExampleTransparentExample" (click)="toggleNav = !toggleNav;" [ngClass]="{'is-active' : toggleNav}">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div id="navbarExampleTransparentExample" class="navbar-menu" [ngClass]="{'is-active' : toggleNav}">
+    <div class="navbar-start">
+      <a class="navbar-item" routerLink="/">
+        Home
+      </a>
+      <a class="navbar-item" routerLink="/products" *ngIf="isLoggedin$ | async">
+        Products
+      </a>
+      <a class="navbar-item" routerLink="/products/create" *ngIf="isLoggedin$ | async">
+        New Product
+      </a>
+      
+    </div>
+
+    <div class="navbar-end">
+        <div *ngIf="isLoggedin$ | async" class="navbar-item">
+            <div class="field is-grouped">
+          <p class="control">
+            <a class="bd-tw-button button" routerLink="/login">
+              <span class="icon">
+                <i class="fas fa-user"></i>
+              </span>
+              <span>
+                Hej {{currentEmail}}
+              </span>
+            </a>
+          </p>
+
+          <p class="control">
+            <a class="bd-tw-button button" routerLink="/login" (click)="logout()">
+              <span class="icon">
+                <i class="fas fa-sign-out-alt"></i>
+              </span>
+              <span>
+                Logout
+              </span>
+            </a>
+          </p>
+        </div>
+      </div>
+ 
+      <div *ngIf="(isLoggedin$ | async) == false" class="navbar-item">
+        <div class="field is-grouped">
+          <p class="control">
+            <a class="bd-tw-button button" routerLink="/login">
+              <span class="icon">
+                <i class="fas fa-user"></i>
+              </span>
+              <span>
+                Login
+              </span>
+            </a>
+          </p>
+
+          <p class="control">
+            <a class="button is-primary" routerLink="/signup">
+              <span class="icon">
+                <i class="fas fa-user-plus"></i>
+              </span>
+              <span>Signup</span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<router-outlet></router-outlet>
+
+<footer class="footer is-white">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <p>And this right here is a spiffy footer, where you can put stuff.</p>
+      </div>
+    </div>
+  </div>
+</footer>

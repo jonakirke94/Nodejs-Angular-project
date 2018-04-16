@@ -1,0 +1,107 @@
+<section class="hero is-dark">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <div class="column is-4 is-offset-4 is-primary" [@flyInOut]>
+        <h3 class="title has-text-grey">Signup</h3>
+        <p class="subtitle has-text-grey">Please signup to proceed</p>
+        <div class="box">
+          <span *ngIf="!showSpinner">
+
+
+
+            <form *ngIf="!showForm" [formGroup]="signupForm" novalidate (ngSubmit)="signupUser()">
+
+              <div class="field">
+                <div class="control has-icons-left has-icons-right">
+                  <input class="input is-large" [ngClass]="{
+            'is-danger': email.invalid  && (email.dirty || email.touched),
+            'is-success': email.valid && (email.dirty || email.touched)
+          }" type="email" placeholder="Your Email" autofocus="" name="email" formControlName="email" autocomplete="email">
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-envelope"></i>
+                  </span>
+                  <span class="icon is-small is-right" *ngIf="email.invalid  && (email.dirty || email.touched)">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </span>
+                  <span class="icon is-small is-right" *ngIf="email.valid  && (email.dirty || email.touched)">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </div>
+                <span class="help is-danger has-text-left" *ngIf="email.errors  && (email.dirty || email.touched)">
+                  <p *ngIf="email.errors.pattern">This email is invalid</p>
+                  <p *ngIf="email.errors.required">The email field is required</p>
+                </span>
+              </div>
+              <div class="field" formGroupName="passwords">
+                <div class="control has-icons-left has-icons-right">
+                  <input class="input is-large" [ngClass]="{
+                      'is-danger': password.invalid  && (password.dirty || password.touched),
+                      'is-success': password.valid && (password.dirty || password.touched)
+                    }" type="password" placeholder="Password" name="password" formControlName="password" autocomplete="on">
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-key"></i>
+                  </span>
+                  <span class="icon is-small is-right" *ngIf="password.invalid  && (password.dirty || password.touched)">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </span>
+                  <span class="icon is-small is-right" *ngIf="password.valid  && (password.dirty || password.touched)">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </div>
+                <span class="help is-danger has-text-left" *ngIf="password.errors  && (password.dirty || password.touched)">
+                  <p *ngIf="password.hasError('minlength')">The password needs to be min. 3</p>
+                  <p *ngIf="password.errors.required">The password field is required</p>
+                </span>
+              </div>
+
+              <div class="field" formGroupName="passwords">
+                <div class="control has-icons-left has-icons-right">
+                  <input class="input is-large" [ngClass]="{
+          'is-danger': (passwords.errors &&
+          passwords.errors.areEqual)  && (confirm.dirty || confirm.touched),
+          'is-success': (!passwords.errors && password.touched) && (confirm.dirty || confirm.touched)
+        }" type="password" placeholder="Confirm password" name="confirm" formControlName="confirm" autocomplete="on" />
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-key"></i>
+                  </span>
+                  <span class="icon is-small is-right" *ngIf="passwords.errors &&
+      passwords.errors.areEqual &&
+      password.touched">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </span>
+                  <span class="icon is-small is-right" *ngIf="!passwords.errors && password.touched">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </div>
+
+                <span class="help is-danger has-text-left" *ngIf="
+    passwords.errors &&
+    passwords.errors.areEqual &&
+    passwords.controls.password.touched">Passwords do not match
+                </span>
+
+              </div>
+
+              <button class="button is-block is-dark is-large is-fullwidth" [disabled]="!signupForm.valid"> Signup</button>
+            </form>
+
+
+            <div *ngIf="error" class="help is-danger auth-txt">{{error}}</div>
+
+            <span *ngIf="!showSignup" class="is-block is-success">
+              <p class="has-text-success is-size-5">Signed up successfully, Welcome!</p>
+            </span>
+          </span>
+          <loading-spinner *ngIf="showSpinner"></loading-spinner>
+        </div>
+
+        <p class="has-text-grey">
+          <a routerLink="/login">Login</a> &nbsp;·&nbsp;
+          <a href="../">Forgot Password</a> &nbsp;·&nbsp;
+          <a href="../">Need Help?</a>
+        </p>
+
+      </div>
+    </div>
+  </div>
+</section>

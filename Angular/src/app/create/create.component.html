@@ -1,0 +1,61 @@
+<section class="hero is-dark">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <div class="column is-4 is-offset-4 is-primary"  [@flyInRight]>
+        <h3 class="title has-text-grey">Create a new product!</h3>
+        <div class="box"  >
+          <span *ngIf="!showSpinner">
+          <form [formGroup]="createForm" novalidate (ngSubmit)="createProduct()">
+            <div class="field">
+              <div class="control has-icons-right">
+                <input class="input is-large" [ngClass]="{
+                      'is-danger': name.invalid  && (name.dirty || name.touched),
+                      'is-success': name.valid && (name.dirty || name.touched)
+                    }" type="text" placeholder="Name" autofocus="" name="name" formControlName="name">
+                <span class="icon is-small is-right" *ngIf="name.invalid  && (name.dirty || name.touched)">
+                  <i class="fas fa-exclamation-triangle"></i>
+                </span>
+                <span class="icon is-small is-right" *ngIf="name.valid  && (name.dirty || name.touched)">
+                  <i class="fas fa-check"></i>
+                </span>
+              </div>
+              <span class="help is-danger has-text-left" *ngIf="name.errors  && (name.dirty || name.touched)">
+                <p *ngIf="name.hasError('minlength')">This name is needs to be atleast 3 characters</p>
+                <p *ngIf="name.errors.required">The name field is required</p>
+              </span>
+            </div>
+
+            <div class="field">
+                <div class="control has-icons-left has-icons-right">
+                    <textarea class="textarea" placeholder="Description" name="description" formControlName="description" [ngClass]="{
+                      'is-danger': description.invalid  && (description.dirty || description.touched),
+                      'is-success': description.valid && (description.dirty || description.touched)
+                    }"></textarea>
+
+                  <span class="icon is-small is-right" *ngIf="description.invalid  && (description.dirty || description.touched)">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </span>
+                  <span class="icon is-small is-right" *ngIf="description.valid  && (name.dirty || description.touched)">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </div>
+                <span class="help is-danger has-text-left" *ngIf="description.errors  && (description.dirty || description.touched)">
+                  <p *ngIf="description.hasError('minlength')">The description needs to be min. 10 characters</p>
+                  <p *ngIf="description.errors.required">The description field is required</p>
+                </span>
+              </div>
+
+
+
+            <button class="button is-block is-success is-large is-fullwidth" [disabled]="!createForm.valid"> Create</button>
+
+            <div *ngIf="error" class="help is-danger auth-txt">{{error}}</div>
+
+          </form>
+        </span>
+        <loading-spinner *ngIf="showSpinner"></loading-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,44 @@
+<section class="hero is-medium is-primary is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Angular Frontend Sample
+        </h1>
+        <h2 class="subtitle">
+         - With bulma
+        </h2>
+      </div>
+    </div>
+  </section>
+
+  <div class="tile is-ancestor pd">
+
+    <div class="tile is-vertical is-6">
+      <div class="tile">
+        <div class="tile is-parent is-vertical">
+          <article class="tile is-child notification is-info clickable" (click)='routeAll()'  [@flyInLeft]>
+            <p class="title">Products</p>
+          </article>
+          <article class="tile is-child notification is-warning clickable" [@flyInLeft]>
+            <p class="title">Insert stuff here</p>
+          </article>
+        </div>
+   
+      </div>
+    </div>
+
+    <div class="tile is-vertical is-6 ">
+        <div class="tile">
+          <div class="tile is-parent is-vertical">
+            <article class="tile is-child notification is-success clickable" (click)='routeCreate()' [@flyInRight]>
+              <p class="title">Create Product</p>
+            </article>
+            <article class="tile is-child notification is-danger clickable" [@flyInRight]>
+              <p class="title">Insert stuff here</p>
+            </article>
+          </div>
+     
+        </div>
+      </div>
+
+  </div>

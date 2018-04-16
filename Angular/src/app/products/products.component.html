@@ -1,0 +1,32 @@
+<div class="column is-centered">
+
+
+<div class="box" *ngFor="let product of products"  [@flyInOut] >
+  <article class="media" >
+    <div class="media-left">
+      <figure class="image is-64x64">
+        <img src="https://bulma.io/images/placeholders/128x128.png" alt="Image">
+      </figure>
+    </div>
+    <div class="media-content">
+      <div class="content">
+        <p>
+          <strong>{{product.ProductId }}</strong> <small>{{ product.Name }}</small> 
+          <br>
+          {{ product.Description }}
+        </p>
+      </div>
+      <nav class="level is-mobile">
+        <div class="level-left">
+          <a class="level-item">
+            <span class="icon is-large"><i class="fas fa-cog" (click)='updateProduct(product)'></i></span>
+          </a>
+        </div>
+      </nav>
+    </div>
+    <a class="delete is-large" (click)='confirmDelete(product)' ></a>
+  </article>
+</div>
+
+
+</div>
