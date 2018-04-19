@@ -2,9 +2,9 @@ const sqlDb = require('mssql');
 const settings = require('./settings')
 
 
-exports.executeSql = function (sql, callback, params = null) {
+exports.executeSql = function (sql, params = null,callback) {
 
-    var conn = new sqlDb.ConnectionPool(settings.dbConfig);
+    const conn = new sqlDb.ConnectionPool(settings.dbConfig);
     
         conn.connect()
             .then(function () {
@@ -12,7 +12,7 @@ exports.executeSql = function (sql, callback, params = null) {
                 const req = new sqlDb.Request(conn);
 
                 //add input parameters if any were passed
-                if(params) {               
+                if(typeof params !== "function") {               
                     for(let i = 0; i < params.length; i++) {
                         const type = getSqlType(params[i].type);
                         req.input(params[i].name, type, params[i].value);

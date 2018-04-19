@@ -28,14 +28,14 @@ exports.user_signup = (req, res, next) => {
           params.push(new Parameter('hash', 'NVarChar' , hash));
       
           db.executeSql(
-            `INSERT INTO Users VALUES(null, (@email), (@hash), null, 0)`,
+            `INSERT INTO Users VALUES(null, (@email), (@hash), null, 0)`, params,
             function(data, err) {
               if (err) {
                 msg.show500(req, res, err);
               } else {
                 msg.show201(req, res, req.body);
               }
-            }, params
+            }
           );
         }
       });
@@ -66,7 +66,7 @@ function userByEmail(email, callback) {
   let params = [];
   params.push(new Parameter('email', 'NVarChar' , email));
 
-  db.executeSql(`SELECT * FROM Users WHERE Email= (@email)`, function(
+  db.executeSql(`SELECT * FROM Users WHERE Email= (@email)`, params, function(
     data,
     err
   ) {
@@ -75,7 +75,7 @@ function userByEmail(email, callback) {
     } else {
       callback(data);
     }
-  }, params);
+  });
 };
 
 exports.user_login = (req, res, next) => {
@@ -92,7 +92,6 @@ exports.user_login = (req, res, next) => {
     //check if password
     bcrypt.compare(req.body.password, user.Password, (err, result) => {
       if (err) {
-        console.log(err);
         return msg.show500(req, res, err);
       }
       if (result) {
