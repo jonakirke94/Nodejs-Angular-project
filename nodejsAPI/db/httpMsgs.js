@@ -42,6 +42,12 @@ exports.show409 = function(req, res, msg) {
   });
 };
 
+exports.show410 = function(req, res) {
+  res.status(410).json({
+    msg: 'Expired'
+  });
+};
+
 //token refresh
 exports.show419 = function(req, res) { 
   res.status(419);

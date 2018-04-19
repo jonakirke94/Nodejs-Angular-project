@@ -2,6 +2,8 @@
     "env": {
         "MssqlPw": "Mypassword",
         "JwtSecretKey": "SuperStrongKey",
-        "JwtRefreshKey": "SuperStrongKey1"
+        "JwtRefreshKey": "SuperStrongKey1",
+        "MAILGUN_USER": "MYUSER",
+        "MAILGUN_PASS": "MYYPASSWORD"
     }
 }

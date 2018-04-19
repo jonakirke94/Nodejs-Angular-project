@@ -28,6 +28,10 @@ CREATE TABLE Users (
     "Password" nvarchar(max) NULL ,
 	"Refreshtoken" nvarchar(max) NULL,
 	"IsLockedOut" bit,
+	"VerificationToken" nvarchar(max) NULL,
+	"IsConfirmed" bit,
+
+
 	CONSTRAINT "PK_Users" PRIMARY KEY  CLUSTERED 
 	(
 		UserId

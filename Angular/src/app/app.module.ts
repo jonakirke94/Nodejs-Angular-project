@@ -19,6 +19,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthGuard } from "./_services/auth.guard";
 import { ProductsComponent } from './products/products.component';
 import { CreateComponent } from './create/create.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
 
 @NgModule({
 
@@ -30,6 +31,7 @@ import { CreateComponent } from './create/create.component';
     LoadingSpinnerComponent,
     ProductsComponent,
     CreateComponent,
+    VerifyEmailComponent,
     
   ],
   imports: [

@@ -6,6 +6,7 @@ import {SignupComponent} from './signup/signup.component';
 import { AuthGuard } from "./_services/auth.guard";
 import { ProductsComponent } from './products/products.component';
 import { CreateComponent } from './create/create.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
 
 
 const routes: Routes = [
@@ -16,6 +17,10 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
+  },
+  {
+    path: 'verify',
+    component: VerifyEmailComponent
   },
   {
     path: 'signup',
