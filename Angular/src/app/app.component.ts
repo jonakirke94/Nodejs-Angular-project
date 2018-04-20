@@ -22,6 +22,7 @@ export class AppComponent {
   apiRoot: string = "http://localhost:3000";
   toggleNav: false;
   isLoggedin$: Observable<boolean>;
+  isVerified$: Observable<boolean>;
   currentEmail: string;
 
   constructor(
@@ -32,6 +33,7 @@ export class AppComponent {
 
   ngOnInit() {
     this.setHeader();
+    this.showAlert();
   }
 
   private setHeader() {
@@ -39,6 +41,18 @@ export class AppComponent {
       this.isLoggedin$ = this._data.isLoggedIn();
       this._data.getLoggedInName().subscribe(res => this.changeEmail(res));
     }
+  }
+
+  private showAlert() {
+    this._data.IsVerified.subscribe(res => {
+      console.log('res: ' + res);
+      if(res === true) {
+        console.log('TRUE')
+      } else {
+        console.log('FALSE')
+      }
+    })
+
   }
 
   private changeEmail(email: string): void {

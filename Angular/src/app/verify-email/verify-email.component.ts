@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { AuthdataService } from '../_services/authdata.service';
 
 @Component({
   selector: 'app-verify-email',
@@ -7,9 +9,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class VerifyEmailComponent implements OnInit {
 
-  constructor() { }
+  constructor(private route: ActivatedRoute, private _auth: AuthdataService,) { }
+  verificationToken: string;
 
   ngOnInit() {
+    this.route
+    .queryParams
+    .subscribe(params => {
+        this.verificationToken = params['verificationToken'];
+
+      
+      this._auth.verify(this.verificationToken).subscribe(() => {
+            this._auth.IsVerified.next(true);        
+      }), err => {
+        if(err.status === 410) {
+          console.log('Token expired please resend a new email');
+        }
+      }
+
+    });
+
+
   }
 
 }

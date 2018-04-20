@@ -17,6 +17,7 @@ export class AuthdataService {
   private email: string;
   loggedIn = new BehaviorSubject<boolean>(false);
   LoggedInName = new BehaviorSubject<string>("");
+  IsVerified = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
 
@@ -48,8 +49,22 @@ export class AuthdataService {
       .shareReplay();
   }
 
+  verify(token: string) {
+    return this.http
+      .post("http://localhost:3000/user/verify", {
+        "veriToken": token
+      })
+      .do(res => console.log(res))
+      .shareReplay();
+  }
+
   private setSession(authResult, email) {
-    //essentially the user is logged in as long as a valid refreshtoken exists on the sever
+
+    if(authResult.data.isVerified) {
+        this.IsVerified.next(true);
+    } 
+
+    //the user is logged in as long as a valid refreshtoken exists on the sever
     const expiresAt = moment().add(authResult.data.refreshExp, "seconds");
     localStorage.setItem("accesstoken", authResult.data.accesstoken);
     localStorage.setItem("refresh_expiresAt", JSON.stringify(expiresAt.valueOf()));
@@ -70,7 +85,7 @@ export class AuthdataService {
     IsValid ? this.loggedIn.next(true) : this.loggedIn.next(false);
     return this.loggedIn.asObservable();
   }
-
+  
   public getLoggedInName() {
     this.loggedIn.subscribe(res => {
       if (res === true) {

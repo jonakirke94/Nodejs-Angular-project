@@ -5,20 +5,21 @@ const msg = require("../db/httpMsgs");
 const Parameter = require('../helpers/parameter');
 
 exports.products_get_all = (req, res, next) => {
-    db.executeSql("SELECT * FROM Products", function(data, err) {
+    const SQL = `SELECT * FROM Products`
+    db.executeSql(SQL, function(data, err) {
         if (err) {
           msg.show500(req, res, err);
         } else {
           msg.show200(req, res, data.recordset);
         }
-    });
+    }, null);
 }
 
 exports.products_get = (req, res, next) => {
     let params = [];
     params.push(new Parameter('id', 'Int' , req.params.productId));
 
-    db.executeSql(`SELECT * FROM Products WHERE ProductId = (@id)`, params, function(
+    db.executeSql(`SELECT * FROM Products WHERE ProductId = (@id)`, function(
       data,
       err
     ) {
@@ -27,7 +28,7 @@ exports.products_get = (req, res, next) => {
       } else {
         msg.show200(req, res, data.recordset, "Success!");
       }
-    });
+    }, params);
 }
 
 exports.products_create = (req, res, next) => { 
@@ -46,14 +47,14 @@ params.push(new Parameter('name', 'NVarChar' , req.body.name));
 params.push(new Parameter('description', 'NVarChar' , req.body.description));
 
 db.executeSql(
-  `INSERT INTO Products VALUES((@name), (@description))`, params,
+  `INSERT INTO Products VALUES((@name), (@description))`, 
   function(data, err) {
     if (err) {
       msg.show500(req, res, err);
     } else {
       msg.show201(req, res, data);
     }
-  });
+  }, params);
 }
 
 exports.products_delete = (req, res, next) => {
@@ -67,7 +68,7 @@ exports.products_delete = (req, res, next) => {
     let params = [];
     params.push(new Parameter('id', 'Int' , req.params.productId));
     
-    db.executeSql(`DELETE FROM Products WHERE ProductId = (@id)`, params, function(
+    db.executeSql(`DELETE FROM Products WHERE ProductId = (@id)`, function(
       data,
       err
     ) {
@@ -76,7 +77,7 @@ exports.products_delete = (req, res, next) => {
       } else {
         msg.show200(req, res, data);
       }
-    });
+    }, params);
 }
 
 exports.products_update = (req, res, next) => {
@@ -93,7 +94,7 @@ exports.products_update = (req, res, next) => {
   const idParam = new Parameter('id', 'Int' , req.params.productId);
   findParams.push(idParam);
 
-  db.executeSql(`SELECT * FROM [dbo].[Products] WHERE ProductId = (@id)`, findParams, function(data, err) {
+  db.executeSql(`SELECT * FROM [dbo].[Products] WHERE ProductId = (@id)`, function(data, err) {
     if (err) {
       msg.show500(req, res, err);
     }
@@ -124,12 +125,12 @@ exports.products_update = (req, res, next) => {
     sql = sql.slice(0, -1);
     sql += ` WHERE ProductId = (@id)`;
 
-    db.executeSql(sql, updateParams, function(data, err) { 
+    db.executeSql(sql, function(data, err) { 
       if (err) {
         msg.show500(req, res, err);
       } else {
         msg.show200(req, res, data, "Success!");
       }
-    });
-  });
+    }, updateParams);
+  }, findParams);
 }

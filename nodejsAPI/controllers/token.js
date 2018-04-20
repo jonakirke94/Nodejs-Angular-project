@@ -39,12 +39,12 @@ exports.saveRefreshToken = (id, refreshtoken) => {
   params.push(new Parameter('token', 'NVarChar' , refreshtoken));
 
   db.executeSql(
-    `UPDATE Users SET Refreshtoken=(@token) WHERE UserId=(@id)`, params,
+    `UPDATE Users SET Refreshtoken=(@token) WHERE UserId=(@id)`,
     function(data, err) {
       if (err) {
         msg.show500(req, res, err);
       }
-    }
+    }, params
   );
 };
 

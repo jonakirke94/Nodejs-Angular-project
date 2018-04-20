@@ -34,12 +34,12 @@ exports.user_signup = (req, res, next) => {
           params.push(new Parameter('veriToken', 'NVarChar' , verificationToken));
 
           const SQL = `INSERT INTO Users VALUES(null, (@email), (@hash), null, 0, (@veriToken) ,0)`;
-          db.executeSql(SQL, params, function(data, err) {
+          db.executeSql(SQL, function(data, err) {
               if (err) {
                 return msg.show500(req, res, err);
               } 
                 //compose the verification email
-                const url = baseUrl + `/verify?veriToken=${verificationToken}`
+                const url = baseUrl + `verify?verificationToken=${verificationToken}`
                 const html = `Hi there, <br> Please verify your email by clicking this link
                 <a href="${url}">Click here</a>`;
 
@@ -47,7 +47,7 @@ exports.user_signup = (req, res, next) => {
                 mailer.sendEmail('webmaster@oddsman.dk', email, "Please verify your email", html);
 
                 msg.show201(req, res, req.body);            
-            }
+            }, params
           );
         }
       });
@@ -61,7 +61,8 @@ exports.userById = (id, callback) => {
   let params = [];
   params.push(new Parameter('id', 'Int' , id));
 
-  db.executeSql(`SELECT * FROM Users WHERE UserId = (@id))`, function(
+  const SQL = `SELECT * FROM Users WHERE UserId = (@id))`
+  db.executeSql(SQL, function(
     data,
     err
   ) {
@@ -78,7 +79,7 @@ function userByEmail(email, callback) {
   let params = [];
   params.push(new Parameter('email', 'NVarChar' , email));
 
-  db.executeSql(`SELECT * FROM Users WHERE Email= (@email)`, params, function(
+  db.executeSql(`SELECT * FROM Users WHERE Email= (@email)`, function(
     data,
     err
   ) {
@@ -87,7 +88,7 @@ function userByEmail(email, callback) {
     } else {
       callback(data);
     }
-  });
+  }, params);
 };
 
 exports.user_login = (req, res, next) => {
@@ -115,7 +116,7 @@ exports.user_login = (req, res, next) => {
         const data = {
           accesstoken: tokens.accesstoken,
           refreshExp: tokens.refreshExp,
-          isConfirmed: user.IsConfirmed
+          isVerified: user.IsConfirmed
         };
 
         return msg.show200(req, res, data, "Auth Successful");
@@ -134,7 +135,7 @@ exports.verify_email = (req, res, next) => {
   let params = [];
   params.push(new Parameter('veriToken', 'NVarChar' , veriToken));
 
-  db.executeSql(`SELECT * FROM Users WHERE VerificationToken=(@veriToken)`, params, function(
+  db.executeSql(`SELECT * FROM Users WHERE VerificationToken=(@veriToken)`, function(
     data,
     err
   ) {
@@ -151,31 +152,33 @@ exports.verify_email = (req, res, next) => {
       //check if the token has expired
       try {
         jwt.verify(veriToken,  process.env.JwtVerificationKey);
-        this.clearVerificationToken();
+        VerifyEmail(user.UserId);
     
       } catch(error) {
         if(error["name"] == 'TokenExpiredError') {
           return msg.show410(req,res);
-      }
+
+        }
     }
-  });
+  }, params);
 
 
-function clearVerificationToken() {
+function VerifyEmail(id) {
   let updateParams = [];
       updateParams.push(new Parameter('confirmed', 'Bit' , 1));
       updateParams.push(new Parameter('veriToken', 'NVarChar' , ''));
-      updateParams.push(new Parameter('id', 'Int' , user.UserId));
+      updateParams.push(new Parameter('id', 'Int' , id));
 
-      const sql = "UPDATE Users SET VerificationToken=(@veriToken), IsConfirmed=(@confirmed) WHERE UserId = (@id)"
+      const SQL = "UPDATE Users SET VerificationToken=(@veriToken), IsConfirmed=(@confirmed) WHERE UserId = (@id)"
 
-      db.executeSql(sql, updateParams, function(data, err) { 
+      db.executeSql(SQL, function(data, err) { 
         if (err) {
-          msg.show500(req, res, err);
+          return msg.show500(req, res, err);
         } else {
-          msg.show200(req, res, data, "Verified email successfully!");
+          console.log('Confirmed')
+          return msg.show200(req, res, data, "Verified email successfully!");
         }
-      });
+      }, updateParams);
 }
 
 
