@@ -60,16 +60,12 @@ export class AuthdataService {
 
   private setSession(authResult, email) {
 
-    if(authResult.data.isVerified) {
-        this.IsVerified.next(true);
-    } 
-
     //the user is logged in as long as a valid refreshtoken exists on the sever
     const expiresAt = moment().add(authResult.data.refreshExp, "seconds");
     localStorage.setItem("accesstoken", authResult.data.accesstoken);
     localStorage.setItem("refresh_expiresAt", JSON.stringify(expiresAt.valueOf()));
 
-    let authInfo = new AuthInfo(email);
+    let authInfo = new AuthInfo(email, authResult.data.isVerified);
     localStorage.setItem("authInfo", JSON.stringify(authInfo));
   }
 
@@ -84,6 +80,12 @@ export class AuthdataService {
     const IsValid = moment().isBefore(this.getExpiration());
     IsValid ? this.loggedIn.next(true) : this.loggedIn.next(false);
     return this.loggedIn.asObservable();
+  }
+
+  public isVerified() {
+    const authInfo = JSON.parse(localStorage.getItem("authInfo"));
+    authInfo.isVerified ? this.IsVerified.next(true) : this.IsVerified.next(false);
+    return this.IsVerified.asObservable();
   }
   
   public getLoggedInName() {

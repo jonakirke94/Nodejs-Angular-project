@@ -28,6 +28,14 @@ exports.user_signup = (req, res, next) => {
           //generate secret token to verify email & expiration      
           const verificationToken = tokens.generateVerificationToken();
 
+          //compose the verification email
+          const url = baseUrl + `verify?verificationToken=${verificationToken}`
+          const html = `Hi there, <br> Please verify your email by clicking this link
+          <a href="${url}">Click here</a>`;
+
+          //send the email
+          mailer.sendEmail('webmaster@oddsman.dk', email, "Please verify your email", html);
+
           let params = [];
           params.push(new Parameter('email', 'NVarChar' , email));
           params.push(new Parameter('hash', 'NVarChar' , hash));
@@ -38,48 +46,41 @@ exports.user_signup = (req, res, next) => {
               if (err) {
                 return msg.show500(req, res, err);
               } 
-                //compose the verification email
-                const url = baseUrl + `verify?verificationToken=${verificationToken}`
-                const html = `Hi there, <br> Please verify your email by clicking this link
-                <a href="${url}">Click here</a>`;
-
-                //send the email
-                mailer.sendEmail('webmaster@oddsman.dk', email, "Please verify your email", html);
+               
 
                 msg.show201(req, res, req.body);            
             }, params
           );
         }
       });
-  })
-
-  
+  }, req, res)
 };
 
-exports.userById = (id, callback) => {
+exports.userById = (id, callback, req, res) => {
 
   let params = [];
   params.push(new Parameter('id', 'Int' , id));
 
-  const SQL = `SELECT * FROM Users WHERE UserId = (@id))`
-  db.executeSql(SQL, function(
+  const sql = `SELECT * FROM Users WHERE UserId = (@id)`;
+  db.executeSql(sql, function(
     data,
     err
   ) {
     if (err) {
-      msg.show500(req, res, err);
+      return msg.show500(req, res, err);
     } else {
       callback(data.recordset);
     }
   }, params);
 };
 
-function userByEmail(email, callback) {
+function userByEmail(email, callback, req, res) {
 
   let params = [];
   params.push(new Parameter('email', 'NVarChar' , email));
 
-  db.executeSql(`SELECT * FROM Users WHERE Email= (@email)`, function(
+  const sql = `SELECT * FROM Users WHERE Email= (@email)`;
+  db.executeSql(sql, function(
     data,
     err
   ) {
@@ -135,7 +136,7 @@ exports.verify_email = (req, res, next) => {
   let params = [];
   params.push(new Parameter('veriToken', 'NVarChar' , veriToken));
 
-  db.executeSql(`SELECT * FROM Users WHERE VerificationToken=(@veriToken)`, function(
+  db.executeSql(`SELECT * FROM Users WHERE VerificationToken= (@veriToken)`, function(
     data,
     err
   ) {
@@ -151,9 +152,22 @@ exports.verify_email = (req, res, next) => {
 
       //check if the token has expired
       try {
-        jwt.verify(veriToken,  process.env.JwtVerificationKey);
-        VerifyEmail(user.UserId);
+          jwt.verify(veriToken,  process.env.JwtVerificationKey);
+        
+          let updateParams = [];
+          updateParams.push(new Parameter('confirmed', 'Bit' , 1));
+          updateParams.push(new Parameter('veriToken', 'NVarChar' , ''));
+          updateParams.push(new Parameter('id', 'Int' , user.UserId));
     
+          const SQL = "UPDATE Users SET VerificationToken=(@veriToken), IsConfirmed=(@confirmed) WHERE UserId = (@id)"
+          db.executeSql(SQL, function(data, err) { 
+            if (err) {
+              return msg.show500(req, res, err);
+            } else {
+              return msg.show200(req, res, data, "Verified email successfully!");
+            }
+          }, updateParams);
+
       } catch(error) {
         if(error["name"] == 'TokenExpiredError') {
           return msg.show410(req,res);
@@ -163,23 +177,39 @@ exports.verify_email = (req, res, next) => {
   }, params);
 
 
-function VerifyEmail(id) {
-  let updateParams = [];
-      updateParams.push(new Parameter('confirmed', 'Bit' , 1));
-      updateParams.push(new Parameter('veriToken', 'NVarChar' , ''));
-      updateParams.push(new Parameter('id', 'Int' , id));
-
-      const SQL = "UPDATE Users SET VerificationToken=(@veriToken), IsConfirmed=(@confirmed) WHERE UserId = (@id)"
-
-      db.executeSql(SQL, function(data, err) { 
-        if (err) {
-          return msg.show500(req, res, err);
-        } else {
-          console.log('Confirmed')
-          return msg.show200(req, res, data, "Verified email successfully!");
-        }
-      }, updateParams);
-}
-
 
 }
+
+exports.sendVerificationEmail = (req, res, next) => {
+  const email = req.body.email;
+
+  //find user by email and fetch token
+  userByEmail(email, function(data) {
+
+    const user = data.recordset[0];
+
+    //check if user was found
+    if (typeof user == "undefined") {
+      return msg.show401(req, res, next);
+    }
+
+    const token = user.VerificationToken;
+
+    //compose the verification email
+    const url = baseUrl + `verify?verificationToken=${token}`;
+    const html = `Hi there, <br> Please verify your email by clicking this link
+      <a href="${url}">Click here</a>`;
+
+    //send the email
+    mailer.sendEmail(
+      "webmaster@oddsman.dk",
+      email,
+      "Please verify your email",
+      html
+    );
+
+    msg.show200(req, res, data, "Resend verification email");
+
+
+  }, req, res)
+};

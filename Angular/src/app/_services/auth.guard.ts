@@ -23,6 +23,15 @@ export class AuthGuard implements CanActivate {
        if(!allowed) {
          this.router.navigateByUrl('/login');
        } else {
+
+        //if user is logged in check if email is verified
+        this._data.isVerified().subscribe(verified => {
+          console.log('Verified? ' + verified);
+          if(!verified) {
+            this.router.navigateByUrl('/verify');
+          } 
+        })
+
          this.isLoggedIn = true;
        }
      });

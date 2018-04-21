@@ -33,30 +33,13 @@ export class AppComponent {
 
   ngOnInit() {
     this.setHeader();
-    this.showAlert();
   }
 
   private setHeader() {
     if (this._data.isLoggedIn()) {
       this.isLoggedin$ = this._data.isLoggedIn();
-      this._data.getLoggedInName().subscribe(res => this.changeEmail(res));
+      this._data.getLoggedInName().subscribe(res => this.currentEmail = res);
     }
-  }
-
-  private showAlert() {
-    this._data.IsVerified.subscribe(res => {
-      console.log('res: ' + res);
-      if(res === true) {
-        console.log('TRUE')
-      } else {
-        console.log('FALSE')
-      }
-    })
-
-  }
-
-  private changeEmail(email: string): void {
-    this.currentEmail = email;
   }
 
   logout() {

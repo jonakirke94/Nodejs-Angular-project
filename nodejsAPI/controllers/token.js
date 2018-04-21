@@ -59,8 +59,8 @@ exports.generateVerificationToken = () => {
 }
 
 exports.generateTokens = user => {
-  const refreshExp = 691200; // 691200s = 8d
-  const accessExp = 300; // 300s = 5m
+  const refreshExp = 600; // 691200s = 8d
+  const accessExp = 10; // 300s = 5m
 
   const accesstoken = jwt.sign(
     {

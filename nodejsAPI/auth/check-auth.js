@@ -27,7 +27,7 @@ module.exports = (req, res, next) => {
                 const user = data[0];
                 const refreshtoken = user.Refreshtoken;
               
-                try {
+                try {              
                     //check if expired else we generate new tokens
                     jwt.verify(refreshtoken,  process.env.JwtRefreshKey);
                    
@@ -40,7 +40,7 @@ module.exports = (req, res, next) => {
                         return msg.show401(req, res, next); 
                     }
                 }
-            });          
+            }, req, res);          
         } 
     }
 }

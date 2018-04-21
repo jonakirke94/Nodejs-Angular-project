@@ -12,15 +12,13 @@ exports.executeSql = function (sql, callback, params = null) {
                 const req = new sqlDb.Request(conn);
 
                 //add input parameters if any were passed
-                if(params) {               
+                if(params) {       
                     for(let i = 0; i < params.length; i++) {
                         const type = getSqlType(params[i].type);
                         req.input(params[i].name, type, params[i].value);
                     }
                 } 
-                console.log(req);
-                console.log('------------------------------');
-                    
+
                 req.query(sql)
                     .then(function (recordset) {
                         callback(recordset);
