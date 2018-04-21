@@ -95,4 +95,12 @@ export class VerifyEmailComponent implements OnInit {
       this.showDanger = false;
     }
   }
+
+  hideSuccess() {
+    this.showNotVerified(true);
+    this.showSuccess = false;
+    this.disableResend = false;
+  }
+
+
 }
