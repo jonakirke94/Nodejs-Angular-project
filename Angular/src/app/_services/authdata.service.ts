@@ -37,6 +37,8 @@ export class AuthdataService {
       .shareReplay();
   }
 
+
+
   signup(email: string, password: string) {
     return this.http
       .post("http://localhost:3000/user/signup", {
@@ -54,12 +56,25 @@ export class AuthdataService {
       .post("http://localhost:3000/user/verify", {
         "veriToken": token
       })
-      .do(res => console.log(res))
+      .do(res => res)
       .shareReplay();
   }
 
-  private setSession(authResult, email) {
+  sendVerificationEmail() {
+    const authInfo = JSON.parse(localStorage.getItem("authInfo"));
+    const email = authInfo.email;
 
+    return this.http
+      .post("http://localhost:3000/user/resend", {
+        email
+      })
+      .do(res => res)
+      .shareReplay();
+  }
+  
+
+
+  private setSession(authResult, email) {
     //the user is logged in as long as a valid refreshtoken exists on the sever
     const expiresAt = moment().add(authResult.data.refreshExp, "seconds");
     localStorage.setItem("accesstoken", authResult.data.accesstoken);

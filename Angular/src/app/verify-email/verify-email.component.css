@@ -1,0 +1,13 @@
+.hero {
+    padding-top: 6em;
+    min-height: 1000px;
+}
+
+.message-header {
+    border-radius: 0
+}
+
+
+.message:not(:last-child) {
+    margin-bottom: 0
+}
