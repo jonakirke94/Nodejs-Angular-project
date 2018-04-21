@@ -67,6 +67,13 @@ export class VerifyEmailComponent implements OnInit {
   resend() {
     this.showSpinner = true;
 
+    //check if user is logged in 
+    this._auth.isLoggedIn().subscribe(loggedIn => {
+      if(!loggedIn) {
+        this.router.navigateByUrl('/login');
+      }
+    })
+
     this._auth.sendVerificationEmail().subscribe(
       res => {
         this.showNotVerified(false);

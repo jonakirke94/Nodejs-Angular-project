@@ -77,6 +77,9 @@ export class LoginComponent implements OnInit {
   }
 
   loginUser() {
+    //clear current data just in case
+    this._auth.logout();
+
     if (this.loginForm.valid) {
       const email = this.loginForm.value.email;
       const password = this.loginForm.value.password;
