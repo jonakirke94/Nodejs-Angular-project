@@ -36,6 +36,7 @@ export class CreateComponent implements OnInit {
   description: FormControl;
   showSpinner: boolean = false;
   error = "";
+  create$;
 
   constructor(
     
@@ -48,6 +49,14 @@ export class CreateComponent implements OnInit {
     this.createFormControls();
     this.createFormGroup();
   }
+
+  ngOnDestroy() {
+    //unsubscribe to prevent memory leaks
+    if(this.create$ && this.create$ !== "undefined") {
+      this.create$.unsubscribe();
+    }
+  }
+
 
   createFormControls() {
     (this.name = new FormControl("", [
@@ -73,7 +82,7 @@ export class CreateComponent implements OnInit {
     const product = new Product(name, description)
 
     this.showSpinner = true;
-    this._products.createProduct(product).subscribe(() => {
+    this.create$ = this._products.createProduct(product).subscribe(() => {
       this.router.navigateByUrl("/products");
   }, err => {
     this.error = "Something went wrong.. Please try again!";

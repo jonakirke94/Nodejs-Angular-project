@@ -18,8 +18,16 @@ export class AuthdataService {
   loggedIn = new BehaviorSubject<boolean>(false);
   LoggedInName = new BehaviorSubject<string>("");
   IsVerified = new BehaviorSubject<boolean>(false);
+  login$;
 
   constructor(private http: HttpClient) {}
+
+  ngOnDestroy() {
+    //unsubscribe to prevent memory leaks
+    if(this.login$ && this.login$ !== "undefined") {
+      this.login$.unsubscribe();
+    }
+  }
 
   login(email: string, password: string) {
     this.logout();

@@ -37,6 +37,9 @@ export class SignupComponent implements OnInit {
   showForm: string;
   showSignup = "hide";
 
+  login$;
+  signup$;
+
   constructor(
     private http: HttpClient,
     private _auth: AuthdataService,
@@ -46,6 +49,14 @@ export class SignupComponent implements OnInit {
   ngOnInit() {
     this.createFormControls();
     this.createForm();
+  }
+
+  ngOnDestroy() {
+  //unsubscribe to prevent memory leaks
+    if(this.login$ && this.login$ !== "undefined" && this.signup$ && this.signup$ !== "undefined") {
+      this.login$.unsubscribe();
+      this.signup$.unsubscribe();
+    }
   }
 
   createFormControls() {
@@ -95,10 +106,10 @@ export class SignupComponent implements OnInit {
 
       //set loading to true and then false if error
       this.showSpinner = true;
-      this._auth.signup(email, password).subscribe(
+      this.signup$ = this._auth.signup(email, password).subscribe(
         () => {
           //logging the user in after we signed him up
-          this._auth.login(email, password).subscribe(() => {
+          this.login$ = this._auth.login(email, password).subscribe(() => {
             this.router.navigateByUrl("/");
           }),
             err => {

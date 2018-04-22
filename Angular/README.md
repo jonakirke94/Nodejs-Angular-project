@@ -1,5 +1,5 @@
 # TODO
-- Email verification
+- Centralize animations
 - Forgot password
 
 # Angular

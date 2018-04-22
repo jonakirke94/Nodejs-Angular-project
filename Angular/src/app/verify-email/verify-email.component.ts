@@ -1,11 +1,37 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AuthdataService } from "../_services/authdata.service";
+import { trigger, state, style, animate, transition, stagger, keyframes, query } from '@angular/animations';
+
 
 @Component({
   selector: "app-verify-email",
   templateUrl: "./verify-email.component.html",
-  styleUrls: ["./verify-email.component.css"]
+  styleUrls: ["./verify-email.component.css"],
+  animations: [
+    //main content
+    trigger("flyInOut", [
+      state("in", style({ transform: "translateX(0)" })),
+      transition("void => *", [
+        style({ transform: "translateX(100%)" }),
+        animate(100)
+      ]),
+      transition("* => void", [
+        animate(100, style({ transform: "translateX(100%)" }))
+      ])
+    ]),
+    //alert bar
+    trigger("flyUpDown", [
+      state("in", style({ transform: "translateY(0)" })),
+      transition("void => *", [
+        style({ transform: "translateY(100%)" }),
+        animate(100)
+      ]),
+      transition("* => void", [
+        animate(100, style({ transform: "translateY(100%)" }))
+      ])
+    ])
+  ]
 })
 export class VerifyEmailComponent implements OnInit {
   constructor(
@@ -19,20 +45,29 @@ export class VerifyEmailComponent implements OnInit {
   showSuccess: boolean = false;
   message: string;
   disableResend: boolean = false;
+  
+  routeParams$;
+  verify$;
+  login$;
+  resend$;
 
   ngOnInit() {
     this.showNotVerified(true);
     this.verify();
   }
 
+  ngOnDestroy() {
+    this.destroy();
+  } 
+
   verify() {
-    this.route.queryParams.subscribe(params => {
+    this.routeParams$ = this.route.queryParams.subscribe(params => {
       this.verificationToken = params["verificationToken"];
 
       if (this.verificationToken) {
         this.showSpinner = true;
 
-        this._auth.verify(this.verificationToken).subscribe(
+        this.verify$ = this._auth.verify(this.verificationToken).subscribe(
           () => {
             //set authinfo.isVerified to true
 
@@ -68,13 +103,13 @@ export class VerifyEmailComponent implements OnInit {
     this.showSpinner = true;
 
     //check if user is logged in 
-    this._auth.isLoggedIn().subscribe(loggedIn => {
+    this.login$ = this._auth.isLoggedIn().subscribe(loggedIn => {
       if(!loggedIn) {
         this.router.navigateByUrl('/login');
       }
     })
 
-    this._auth.sendVerificationEmail().subscribe(
+    this.resend$ = this._auth.sendVerificationEmail().subscribe(
       res => {
         this.showNotVerified(false);
 
@@ -107,6 +142,24 @@ export class VerifyEmailComponent implements OnInit {
     this.showNotVerified(true);
     this.showSuccess = false;
     this.disableResend = false;
+  }
+
+  destroy() {
+    if(this.routeParams$ && this.routeParams$ !== "undefined") {
+      this.routeParams$.unsubscribe();
+    }
+
+    if(this.verify$ && this.verify$ !== "undefined") {
+      this.verify$.unsubscribe();
+    }
+
+    if(this.login$ && this.login$ !== "undefined") {
+      this.login$.unsubscribe();
+    }
+
+    if(this.resend$ && this.resend$ !== "undefined") {
+      this.resend$.unsubscribe();
+    }
   }
 
 

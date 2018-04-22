@@ -47,6 +47,9 @@ export class LoginComponent implements OnInit {
   showSpinner: boolean = false;
   error = "";
 
+  login$;
+  verify$;
+
   constructor(
     private http: HttpClient,
     private _auth: AuthdataService,
@@ -56,6 +59,14 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     this.createFormControls();
     this.createForm();
+  }
+
+  ngOnDestroy() {
+    //unsubscribe to prevent memory leaks
+    if(this.login$ && this.login$ !== "undefined" && this.verify$ && this.verify$ !== "undefined") {
+      this.login$.unsubscribe();
+      this.verify$.unsubscribe();
+    }
   }
 
   createFormControls() {
@@ -86,14 +97,15 @@ export class LoginComponent implements OnInit {
 
       //set loading to true and then false if error
       this.showSpinner = true;
-      this._auth.login(email, password).subscribe(
+      this.login$ = this._auth.login(email, password).subscribe(
         () => {
           //if user is not verified redirect
 
-          this._auth.isVerified().subscribe(verified => {
+          this.verify$ = this._auth.isVerified().subscribe(verified => {
             if (!verified) {
               this.router.navigateByUrl("/verify");
             } else {
+              console.log('Seems you are ver')
               this.router.navigateByUrl("/");
             }
           });
@@ -102,8 +114,10 @@ export class LoginComponent implements OnInit {
           this.error = "Incorrect email or password";
           this.showSpinner = false;
         }
-      );
+      )
     }
+
+    
 
     //may not want to reset form
     this.loginForm.reset();

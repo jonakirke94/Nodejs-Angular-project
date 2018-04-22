@@ -32,16 +32,22 @@ import { interval } from 'rxjs/observable/interval';
 export class ProductsComponent implements OnInit {
 
   products = [];
+  fetch$;
+  update$;
+  delete$;
 
   constructor(private _products: ProductsService) { }
 
-  ngOnInit() {
-   
+  ngOnInit() { 
     this.fetchProducts();
   }
 
+  ngOnDestroy() {
+    this.destroy();
+  }
+
   fetchProducts() {
-    this._products.getProducts()
+    this.fetch$ = this._products.getProducts()
     .subscribe(res => {
       this.products = res["data"];
       this.products.reverse();
@@ -49,7 +55,6 @@ export class ProductsComponent implements OnInit {
   }
 
   updateProduct(model: Product) {
-    console.log(model);
 
     swal.setDefaults({
       input: 'text',
@@ -77,7 +82,7 @@ export class ProductsComponent implements OnInit {
         const product = new Product(result.value[0], result.value[1]);
         const id = model["ProductId"];
 
-        this._products.updateProduct(id, product).subscribe(res => {
+        this.update$ = this._products.updateProduct(id, product).subscribe(res => {
           swal(
             'Success!',
             'The product got updated!',
@@ -86,7 +91,6 @@ export class ProductsComponent implements OnInit {
 
           this.fetchProducts();
         }, err => {
-          console.log('ERROR');
         })
       }
     })
@@ -105,7 +109,7 @@ export class ProductsComponent implements OnInit {
       confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
       if (result.value) {
-        this._products.deleteProduct(id).subscribe(res => {
+        this.delete$ = this._products.deleteProduct(id).subscribe(res => {
         swal(
           'Deleted!',
           'The product has been deleted.',
@@ -124,6 +128,21 @@ export class ProductsComponent implements OnInit {
     })
   }
 
+  destroy() {
+    //unsubscribe to prevent memory leaks
+    if(this.fetch$ && this.fetch$ !== "undefined") {
+      this.fetch$.unsubscribe();
+    }
+
+    if(this.update$ && this.update$ !== "undefined") {
+      this.update$.unsubscribe();
+    }
+
+    if(this.delete$ && this.delete$ !== "undefined") {
+      this.delete$.unsubscribe();
+    }
+  }
+ 
 
 
 }

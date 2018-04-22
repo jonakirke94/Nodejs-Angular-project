@@ -1,11 +1,11 @@
-<article *ngIf="showDanger" class="message is-danger is-large">
+<article *ngIf="showDanger" class="message is-danger is-large" [@flyUpDown]>
   <div class="message-header">
     <p>{{message}}</p>
     
   </div>
 </article>
 
-<article *ngIf="showSuccess" class="message is-success is-large" (click)="hideSuccess()">
+<article *ngIf="showSuccess" class="message is-success is-large" (click)="hideSuccess()" [@flyUpDown]>
   <div class="message-header">
     <p>{{message}}</p>
     <button class="delete" aria-label="delete"></button>
@@ -17,7 +17,7 @@
 <section class="hero is-dark">
   <div class="hero-body">
     <div class="container has-text-centered">
-      <div class="column is-4 is-offset-4 is-primary">
+      <div class="column is-4 is-offset-4 is-primary" [@flyInOut]>
 
         <div class="box"  >
           <span *ngIf="!showSpinner">
